@@ -1,48 +1,93 @@
-
-________________________________________
 🧠 Proactive AI-Based Anomaly Detection for ETL Pipelines
 📖 Overview
-This project implements a GPU-accelerated, autoencoder-based anomaly-detection layer integrated within a Dagster-orchestrated ETL pipeline. It’s the practical build for my MSc thesis: “Proactive AI-Based Anomaly Detection for ETL Pipelines: A Predictive QA Framework for Data Engineering Workflows.”
-The system proactively validates data during source→target movement and flags anomalies, missing records, duplicates, and mismatches before data reaches production—reducing manual QA effort and increasing trust in downstream analytics.
-________________________________________
-⚙️ System Architecture
-1.	Data Flow Simulation
-o	Synthetic datasets (Banking, Insurance, Sales) loaded to NeonDB/Supabase as source/target views.
-o	Controlled anomaly injection (nulls, duplicates, outliers, missing records) in target tables to emulate real defects.
-2.	Orchestration (Dagster)
-o	Dagster assets/jobs run the ETL and automatically trigger the validation stage after each load.
-3.	AI Validation Layer (Autoencoder)
-o	PyTorch autoencoder learns “normal” patterns on clean data.
-o	During validation, high reconstruction error ⇒ anomaly.
-o	CUDA (GPU) acceleration for fast inference.
-4.	Outputs
-o	Logs of anomalies/duplicates/nulls/missing records written as CSVs to AWS S3.
-o	Email notification with summary + GPU status sent to the QA inbox.
-________________________________________
+
+This project implements a GPU-accelerated, autoencoder-based anomaly detection system that is fully integrated within a Dagster ETL pipeline.
+It serves as the practical implementation for my MSc Thesis — “Proactive AI-Based Anomaly Detection for ETL Pipelines: A Predictive QA Framework for Data Engineering Workflows.”
+
+The system proactively validates data during every ETL run by embedding deep learning–based anomaly detection directly into the pipeline.
+When data loads occur, the autoencoder automatically scans the clean source data, learns its patterns, and then validates the target data in real time to detect deviations.
+
+⚙️ System Workflow
+
+Integrated Autoencoder Learning
+
+During each ETL job, the autoencoder scans the clean source dataset to learn its internal data patterns and correlations.
+
+These learned representations serve as the benchmark for comparison during target data validation.
+
+Target Data Validation
+
+When the data is loaded into the target system, the same autoencoder evaluates the new data against the learned clean data patterns.
+
+Any record showing unusual reconstruction error or deviation is immediately flagged as an anomaly.
+
+Automated Logging and Reporting
+
+All detected anomalies are logged into an AWS S3 bucket.
+
+A detailed summary report containing anomaly statistics and GPU status is automatically sent via email to the QA or data engineering team.
+
+End-to-End GPU Acceleration (CUDA)
+
+The entire validation process is powered by CUDA-enabled GPUs, ensuring superfast matrix operations and parallel computation during autoencoder inference.
+
+This enables large-scale anomaly validation in a fraction of the time compared to CPU-based processing.
+
+⚡ CUDA Acceleration Highlights
+
+Massive Parallelism: CUDA executes thousands of threads simultaneously, allowing rapid validation across millions of records.
+
+Optimized Computation: PyTorch operations such as matrix multiplications and tensor transformations are offloaded to GPU cores for lightning-fast processing.
+
+Low Latency: Real-time GPU inference ensures that data validation occurs almost instantly after each load.
+
+Scalability: The CUDA-based design is easily extendable to multi-GPU environments for enterprise-scale data pipelines.
+
 🧩 Implementation Highlights
-•	Core tech: Dagster 1.x, PyTorch 2.x, PostgreSQL (Neon), AWS S3.
-•	Key files:
-o	jobs.py — ETL job and post-load validation trigger.
-o	repository.py — registers Dagster jobs/assets.
-o	banking_anomaly_detection_to_s3.py — GPU-based validator + S3 uploads.
-o	requirements.txt — reproducible environment.
-o	.gitignore — excludes venv/logs/data/artifacts.
 
-Dataset	Num of Records	Features	Injected Anomalies	AE Detection Rate	GPU Time (secs)	CPU Time (secs)
-Banking	600k	20	~1%	~99%	10-12 secs	22-25 secs
-Insurance	1 million	10	~0.5%	~98%	6-9 secs	18-20 secs
-Sales	200k	8	~0.001%	100%	5-7 secs	12-15 secs
+Frameworks: Dagster 1.x, PyTorch 2.x (CUDA-enabled), PostgreSQL (Neon), AWS S3
 
-________________________________________
-🧰 Setup
-1.	Clone
-        git clone https://github.com/kranthi09/Thesis.git
-                cd Thesis
-2.	Environment
-        python -m venv .venv
-                .venv\Scripts\activate   # Windows
-                 pip install -r requirements.txt
-3.	Configuration (.env, not committed)
+Integration: Autoencoder model runs inside the Dagster job — no separate step required.
+
+Key Components:
+
+jobs.py – Defines the ETL workflow and triggers validation.
+
+repository.py – Registers Dagster jobs and assets.
+
+banking_anomaly_detection_to_s3.py – Performs GPU-based validation and uploads logs to S3.
+
+requirements.txt – Contains dependency versions for reproducibility.
+
+.gitignore – Excludes heavy or environment-specific files like .venv and logs.
+
+🌟 Significance
+
+End-to-End Automation: The AI validation layer runs within the ETL pipeline automatically — no manual intervention needed.
+
+Proactive QA: Detects data-quality issues as soon as they occur, preventing corrupt or inconsistent data from reaching production systems.
+
+High Performance: CUDA acceleration enables ultra-fast validation, even for large-scale datasets.
+
+Business Impact: Minimizes defect leakage, improves data trust, and reduces manual testing time.
+
+🧰 Setup Instructions
+
+Clone the Repository
+
+git clone https://github.com/kranthi09/Thesis.git
+cd Thesis
+
+
+Create and Activate Virtual Environment
+
+python -m venv .venv
+.venv\Scripts\activate
+pip install -r requirements.txt
+
+
+Configure Environment Variables (.env)
+
 SOURCE_DB=postgresql+psycopg2://.../source
 TARGET_DB=postgresql+psycopg2://.../target
 AWS_ACCESS_KEY_ID=...
@@ -51,13 +96,28 @@ S3_BUCKET=etl-logs-neon
 EMAIL_SENDER=...
 EMAIL_RECEIVER=...
 SMTP_PASSWORD=...
-4.	Run Dagster
-dagster dev -f repository.py
-Open http://localhost:3000 and launch the job.
 
-________________________________________
+
+Launch Dagster
+
+dagster dev -f repository.py
+
+
+Then open http://localhost:3000
+ to run and monitor your ETL job.
+
+🚀 Future Enhancements
+
+Integrate drift detection and dynamic re-training of autoencoders.
+
+Enable real-time data stream validation using Kafka or Spark.
+
+Extend to multi-GPU support using NVIDIA RAPIDS or Dask.
+
+Build a visual dashboard for anomaly insights and validation history.
+
 👤 Author
+
 Kranthi Kumar
 MSc Data Analytics, National College of Ireland
 📧 kranthi.vys86@gmail.com
-
