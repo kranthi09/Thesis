@@ -1,0 +1,9 @@
+dagster==1.7.2
+pandas==2.2.2
+numpy==1.26.4
+sqlalchemy==2.0.30
+psycopg2-binary==2.9.9
+torch==2.3.0
+scikit-learn==1.5.0
+boto3==1.34.103
+GPUtil==1.4.0
