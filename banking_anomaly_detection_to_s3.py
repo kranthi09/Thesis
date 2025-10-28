@@ -16,8 +16,8 @@ PRIMARY_KEY = "transaction_id"
 EPOCHS = 100
 OUTPUT_DIR = "validation_logs"
 
-AWS_ACCESS_KEY = 'AKIAQH3N7PGYOJFWBMFJ'
-AWS_SECRET_KEY = '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'
+AWS_ACCESS_KEY = ''
+AWS_SECRET_KEY = ''
 BUCKET_NAME = 'etl-logs-neon'
 
 EMAIL_SENDER = 'kranthi.vys86@gmail.com'
@@ -145,3 +145,4 @@ def detect_anomalies():
 # Entry point
 if __name__ == "__main__":
     detect_anomalies()
+
