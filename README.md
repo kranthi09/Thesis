@@ -53,13 +53,8 @@ EMAIL_RECEIVER=...
 SMTP_PASSWORD=...
 4.	Run Dagster
 dagster dev -f repository.py
-               Open http://localhost:3000 and launch the job.
-________________________________________
-📈 Roadmap
-•	Add drift detection + auto-retraining.
-•	Streaming validation with Dagster.
-•	Containerized AE service; multi-GPU/distributed runs.
-•	Broader baseline comparisons (IF/LOF/OC-SVM) & PR curves.
+Open http://localhost:3000 and launch the job.
+
 ________________________________________
 👤 Author
 Kranthi Kumar
